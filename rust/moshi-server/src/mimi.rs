@@ -182,8 +182,11 @@ impl Mimi {
                 }
                 Ok(MsgType::Codes) => {
                     let codes: Vec<u32> = msg[1..]
-                        .chunks_exact(4)
-                        .map(|chunk| u32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
+                        .as_chunks::<4>()
+                        .0
+                        .iter()
+                        .copied()
+                        .map(u32::from_le_bytes)
                         .collect();
                     let ncodes = codes.len();
                     let codes = Tensor::from_vec(codes, (1, ncodes, 1), &self.device)?;

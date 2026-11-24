@@ -212,7 +212,7 @@ impl Config {
         use utils::resolve_or_download as rod;
         let config = std::fs::read_to_string(p)?;
         let mut config: Self = toml::from_str(&config)?;
-        for (_, c) in config.modules.iter_mut() {
+        for c in config.modules.values_mut() {
             match c {
                 ModuleConfig::Mimi { send_path: _, recv_path: _, config: c } => {
                     c.audio_tokenizer_file = rod(&c.audio_tokenizer_file)?;
@@ -222,7 +222,7 @@ impl Config {
                     c.text_tokenizer_file = rod(&c.text_tokenizer_file)?;
                     c.speaker_tokenizer_file = rod(&c.speaker_tokenizer_file)?;
                     c.audio_tokenizer_file = rod(&c.audio_tokenizer_file)?;
-                    for (_, v) in c.voices.iter_mut() {
+                    for v in c.voices.values_mut() {
                         *v = rod(v)?
                     }
                     c.voice_dir = rod(&c.voice_dir)?;
@@ -436,7 +436,7 @@ impl AppStateInner {
         // };
 
         let mut modules = Vec::with_capacity(config.modules.len());
-        for (_, module_cfg) in config.modules.iter() {
+        for module_cfg in config.modules.values() {
             let m = Module::new(module_cfg, &config, &device)?;
             modules.push(m)
         }
